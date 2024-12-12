@@ -1,2 +1,2 @@
 # documentando-aprendizado
-Este repositório tem por objetivo solidificar o conhecimento adquirido em programação bem como documentar algumas etapas desse processo.
+Este repositório tem por objetivo solidificar o conhecimento adquirido aprendendo programação bem como documentar algumas etapas desse processo.
