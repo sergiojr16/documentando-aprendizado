@@ -1,3 +1,4 @@
+import os
 def menu_inicial():
     print("-"*40)
     print("[1] - Adicionar produto ")
@@ -10,19 +11,59 @@ def menu_inicial():
 
 def adicionar_produto(estoque):
     id_produto = input("Digite o ID do produto: ")
+    for produto in estoque:
+        while id_produto == produto['ID']:
+            print("Já existe um produto com este ID, favor utilizar um ID diferente.")
+            id_produto = input("Digite o ID do produto: ")
     nome = input("Digite o nome do produto: ").capitalize()
     quantidade = int(input("Digite a quantidade deste produto no estoque: "))
     preco = float(input("Digite o preço da unidade deste produto: "))
 
     novo_produto = {"ID": id_produto, "nome": nome, "quantidade": quantidade, "preco": preco}
     estoque.append(novo_produto)
-    print(f"{nome} foi adicionado ao estoque.")
+    print(f"\n O produto {nome} foi adicionado ao estoque.")
 
 def listar_produtos(estoque):
-    pass
+    if not estoque:
+        print("Não há produtos no estoque.")
+    else:
+        estoque_ordenado = sorted(estoque, key=lambda x: x['ID'])
+        for produto in estoque_ordenado:
+            print(f"ID: {produto['ID']}, Nome: {produto['nome']}, "
+                  f"Quantidade: {produto['quantidade']}, Preço: {produto['preco']}")
 
-def atualizar_produto():
-    pass
+def atualizar_produto(estoque):
+    listar_produtos(estoque)
+    if not estoque:
+        print("Não há produtos no estoque.")
+    else:
+        id_produto_atualizado = input("Digite o ID do produto a ser atualizado: ")
+        for produto in estoque:
+            if id_produto_atualizado == produto['ID']:
+                print("[1] - Nome.")
+                print("[2] - Quantidade.")
+                print("[3] - Valor.")
+                print("[4] - Retornar ao menu principal ")
+                opcao_atualizar = input("\nSelecione a opção a ser atualizada: ")
+                if opcao_atualizar == "1":
+                    novo_nome = input("Digite o novo nome: ")
+                    produto['nome'] = novo_nome
+                    print(f"O nome atualizado é: {produto['nome']}")
+                elif opcao_atualizar == "2":
+                    nova_quantidade = input("Digite a quantidade atualizada: ")
+                    produto['quantidade'] = nova_quantidade
+                    print(f"A quantidade atualizada é: {produto['quantidade']}")
+                elif opcao_atualizar == "3":
+                    novo_preco = float(input("Digite o preço atualizado: "))
+                    produto['preco'] = novo_preco
+                    print(f"O preço atualizado é: {produto['preco']}")
+                elif opcao_atualizar == "4":
+                    print("Voltando ao menu principal...")
+                    return
+                else:
+                    print("Opção inválida, nenhum produto foi atualizado")
+                return
+        print(f"Não foi encontrado nenhum produto com o ID {id_produto_atualizado}.")
 
 def remover_produto():
     pass
@@ -38,12 +79,13 @@ def controle_de_estoque():
     while True:
         menu_inicial()
         opcao = input("Selecione uma opção: ")
+        os.system("cls")
         if opcao == "1":
             adicionar_produto(estoque)
         elif opcao == "2":
-            pass
+            listar_produtos(estoque)
         elif opcao == "3":
-            pass
+            atualizar_produto(estoque)
         elif opcao == "4":
             pass
         elif opcao == "5":
