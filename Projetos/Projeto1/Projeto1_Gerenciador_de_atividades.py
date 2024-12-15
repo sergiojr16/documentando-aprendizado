@@ -1,7 +1,7 @@
 # Menu Principal
 def menu_inicial():
     print("-"*40)
-    print("==== Gerenciador de Atividadess ====")
+    print("==== Gerenciador de Atividades ====")
     print("[1] - Adicionar Atividade")
     print("[2] - Listar Atividades")
     print("[3] - Marcar Atividade como concluída")
