@@ -15,4 +15,18 @@
     organização do código, tornando o mesmo mais legível;
         - Tratamento de erros: em algumas funções foi utilizado o bloco (try-
     except) para lidar com entradas inválidas.
+
+## Projeto 2: Controe de estoque
+        Foi desenvolvido um projeto simples de controle de estoque, com as fun-
+    cionalidades: adicionar, listar, remover e atualizar produtos além de salvar
+    os dados do estoque em um arquivo ou carregar dados de um arquivo salvo.
+        De modo semelhante ao Projeto 1, foram exercitados fundamentos básicos
+    como:
+        - Estruturas de dados;
+        - Controle de fluxo;
+        - Manipulação de dados;
+        - Modularidade;
+        - Tratamento de erros;
+        A principal novidade se deu na utilização do módulo 'os' para a leitura 
+    e escrita de arquivos.
         
