@@ -7,7 +7,7 @@ class Pessoa:
         self.cpf = cpf
 
     def __str__(self):
-        return f"Cliente {self.nome} | Idade: {self.idade} anos | CPF: {self.cpf}"
+        return f"Cliente {self.nome}"
 
 
 class Conta:
@@ -29,22 +29,46 @@ class Conta:
             raise ValueError("O novo saldo deve ser um número.")
 
     def sacar(self, valor):
-        pass
+        if valor > self.__saldo:
+            print("Não há saldo suficiente para realizar esta transação. ")
+        else:
+            self.__saldo -= valor
+            print(f"Foi realizado um saque no valor de R$ {valor:.2f}. \n"
+                  f"Seu novo saldo é: R$ {self.__saldo:.2f}")
+            self.registrar_historico(f"Saque de R$ {valor:.2f}")
+
 
     def depositar(self, valor):
-        pass
+        if valor < 0:
+            print("Valor inválido para depósito. ")
+        else:
+            self.__saldo += valor
+            print(f"Deposito no valor de R$ {valor:.2f} realizado com sucesso. \n"
+                  f"Seu novo saldo é: R$ {self.__saldo:.2f}")
+            self.registrar_historico(f"Depósito de R$ {valor:.2f}")
 
     def transferir(self, valor, conta_destino):
-        pass
+        if valor > self.__saldo:
+            print("Não há saldo suficiente para realizar esta transação. ")
+        else:
+            self.__saldo -= valor
+            conta_destino.__saldo += valor
+            print(f"Foi transferido R$ {valor:.2f} da conta {self.num_conta} para a conta {conta_destino}. ")
+            print(f"O novo saldo da conta {self.num_conta} é: R$ {self.__saldo}. ")
+            print(f"O novo saldo da conta {conta_destino.num_conta} é: R$ {conta_destino.__saldo}. ")
+            self.registrar_historico(f"Transferência feita para {conta_destino} no valor de R$ {valor:.2f}")
+            conta_destino.registrar_historico(f"Transferência recebida de {self.num_conta} no valor de R$ {valor:.2f}")
+
 
     def consultar_saldo(self):
-        pass
+        print(f" O saldo da conta {self.num_conta} é: R$ {self.__saldo}")
 
-    def registrar_historico(self):
-        pass
+    def registrar_historico(self, registro):
+        self.historico.append(registro)
 
     def consultar_historico(self):
-        pass
+        for historico in self.historico:
+            print(f" - {historico}")
 
     def __str__(self):
         return f"Conta {self.num_conta} | {self.pessoa}"
@@ -75,7 +99,8 @@ def menu_inicial():
     print("-" * 40)
     print("[1] - Cadastrar novo cliente ")
     print("[2] - Já sou cliente ")
-    print("[3] - Sair do banco ")
+    print("[3] - Consultar lista de clientes cadastrados ")
+    print("[4] - Sair do banco ")
     print("-" * 40)
 
 
@@ -127,8 +152,8 @@ def sistema_bancario():
             cadastrar_cliente(banco)
         elif opcao == "2":
             while True:
-                num_conta = int(input("Digite o número da conta: "))
-                if num_conta not in banco.contas.keys:
+                num_conta = input("Digite o número da conta: ")
+                if num_conta not in banco.contas.keys():
                     print("Esta conta não existe em nosso sistema, tente novamente. ")
                 else:
                     conta_logada = banco.encontrar_conta(num_conta)
@@ -136,11 +161,19 @@ def sistema_bancario():
             menu_cliente()
             opcao_cliente = input("Selecione uma das opções: ")
             if opcao_cliente == "1":
-                conta_logada.sacar()
+                valor = float(input("Qual valor deseja sacar de sua conta? "))
+                conta_logada.sacar(valor)
             elif opcao_cliente == "2":
-                conta_logada.depositar()
+                valor = float(input("Qual valor deseja depositar em sua conta? "))
+                conta_logada.depositar(valor)
             elif opcao_cliente == "3":
-                conta_logada.transferir()
+                valor = float(input("Qual valor deseja transferir de sua conta? "))
+                num_conta_destino = input("Para qual conta deseja fazer a transferência? ")
+                conta_destino = banco.encontrar_conta(num_conta_destino)
+                if conta_destino:
+                    conta_logada.transferir(valor, conta_destino)
+                else:
+                    print(f"A conta {conta_destino} não foi encontrada. ")
             elif opcao_cliente == "4":
                 conta_logada.consultar_saldo()
             elif opcao_cliente == "5":
@@ -151,6 +184,8 @@ def sistema_bancario():
                 print("Saindo do banco...")
                 break
         elif opcao == "3":
+            banco.listar_contas()
+        elif opcao == "4":
             print("Saindo do banco...")
             break
         else:
