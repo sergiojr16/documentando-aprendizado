@@ -89,6 +89,7 @@ class Banco:
         if not self.contas:
             print("Não há contas cadastradas. ")
         else:
+            print("\nLista de Contas Cadastradas: ")
             for conta in self.contas.values():
                 print(conta)
 
@@ -107,7 +108,7 @@ def menu_inicial():
 def cadastrar_cliente(banco):
     nome = input("Digite o nome do Cliente: ")
     idade = int(input("Digite a idade do cliente: "))
-    cpf = input("Digite o cpf do cliente: ")
+    cpf = int(input("Digite o cpf do cliente: "))
 
     cliente = Pessoa(nome, idade, cpf)
     while True:
@@ -138,7 +139,6 @@ def menu_cliente():
     print("[4] - Consultar saldo da conta ")
     print("[5] - Consultar histórico de transações ")
     print("[6] - Voltar ao menu inicial ")
-    print("[7] - Sair do banco ")
     print("-"*40)
 
 
@@ -151,6 +151,9 @@ def sistema_bancario():
         if opcao == "1":
             cadastrar_cliente(banco)
         elif opcao == "2":
+            if not banco.contas.keys():
+                print("Não há nenhuma conta cadastrada. ")
+                continue
             while True:
                 num_conta = input("Digite o número da conta: ")
                 if num_conta not in banco.contas.keys():
@@ -158,31 +161,41 @@ def sistema_bancario():
                 else:
                     conta_logada = banco.encontrar_conta(num_conta)
                     break
-            menu_cliente()
-            opcao_cliente = input("Selecione uma das opções: ")
-            if opcao_cliente == "1":
-                valor = float(input("Qual valor deseja sacar de sua conta? "))
-                conta_logada.sacar(valor)
-            elif opcao_cliente == "2":
-                valor = float(input("Qual valor deseja depositar em sua conta? "))
-                conta_logada.depositar(valor)
-            elif opcao_cliente == "3":
-                valor = float(input("Qual valor deseja transferir de sua conta? "))
-                num_conta_destino = input("Para qual conta deseja fazer a transferência? ")
-                conta_destino = banco.encontrar_conta(num_conta_destino)
-                if conta_destino:
-                    conta_logada.transferir(valor, conta_destino)
+            while True:
+                menu_cliente()
+                opcao_cliente = input("Selecione uma das opções: ")
+                if opcao_cliente == "1":
+                    try:
+                        valor = float(input("Qual valor deseja sacar de sua conta? "))
+                        conta_logada.sacar(valor)
+                    except ValueError:
+                        print("Não foi digitado um número válido, tente novamente. ")
+                elif opcao_cliente == "2":
+                    try:
+                        valor = float(input("Qual valor deseja depositar em sua conta? "))
+                        conta_logada.depositar(valor)
+                    except ValueError:
+                        print("Não foi digitado um número válido, tente novamente. ")
+                elif opcao_cliente == "3":
+                    try:
+                        valor = float(input("Qual valor deseja transferir de sua conta? "))
+                        banco.listar_contas()
+                        num_conta_destino = input("\nPara qual conta deseja fazer a transferência? ")
+                        conta_destino = banco.encontrar_conta(num_conta_destino)
+                        if conta_destino:
+                            conta_logada.transferir(valor, conta_destino)
+                        else:
+                            print(f"A conta não foi encontrada. ")
+                    except ValueError:
+                        print("Não foi digitado um número válido, tente novamente. ")
+                elif opcao_cliente == "4":
+                    conta_logada.consultar_saldo()
+                elif opcao_cliente == "5":
+                    conta_logada.consultar_historico()
+                elif opcao_cliente == "6":
+                    break
                 else:
-                    print(f"A conta {conta_destino} não foi encontrada. ")
-            elif opcao_cliente == "4":
-                conta_logada.consultar_saldo()
-            elif opcao_cliente == "5":
-                conta_logada.consultar_historico()
-            elif opcao_cliente == "6":
-                continue
-            elif opcao_cliente == "7":
-                print("Saindo do banco...")
-                break
+                    print("Opção inválida, tente novamente.")
         elif opcao == "3":
             banco.listar_contas()
         elif opcao == "4":
