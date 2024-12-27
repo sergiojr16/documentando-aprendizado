@@ -26,11 +26,11 @@ class Conta:
         if isinstance(novo_saldo, float):
             self.__saldo = novo_saldo
         else:
-            raise ValueError("O novo saldo deve ser um número.")
+            raise ValueError("\nO novo saldo deve ser um número.")
 
     def sacar(self, valor):
         if valor > self.__saldo:
-            print("Não há saldo suficiente para realizar esta transação. ")
+            print("\nNão há saldo suficiente para realizar esta transação. ")
         else:
             self.__saldo -= valor
             print(f"Foi realizado um saque no valor de R$ {valor:.2f}. \n"
@@ -40,16 +40,16 @@ class Conta:
 
     def depositar(self, valor):
         if valor < 0:
-            print("Valor inválido para depósito. ")
+            print("\nValor inválido para depósito. ")
         else:
             self.__saldo += valor
-            print(f"Deposito no valor de R$ {valor:.2f} realizado com sucesso. \n"
+            print(f"\nDeposito no valor de R$ {valor:.2f} realizado com sucesso. \n"
                   f"Seu novo saldo é: R$ {self.__saldo:.2f}")
             self.registrar_historico(f"Depósito de R$ {valor:.2f}")
 
     def transferir(self, valor, conta_destino):
         if valor > self.__saldo:
-            print("Não há saldo suficiente para realizar esta transação. ")
+            print("\nNão há saldo suficiente para realizar esta transação. ")
         else:
             self.__saldo -= valor
             conta_destino.__saldo += valor
@@ -61,7 +61,7 @@ class Conta:
 
 
     def consultar_saldo(self):
-        print(f" O saldo da conta {self.num_conta} é: R$ {self.__saldo}")
+        print(f"O saldo da conta {self.num_conta} é: R$ {self.__saldo}")
 
     def registrar_historico(self, registro):
         self.historico.append(registro)
@@ -80,14 +80,14 @@ class Banco:
 
     def adicionar_conta(self, conta):
         self.contas[conta.num_conta] = conta
-        print(f"A conta {conta.num_conta} foi adicionada. ")
+        print(f"\nA conta {conta.num_conta} foi adicionada. ")
 
     def encontrar_conta(self, num_conta):
         return self.contas.get(num_conta)
 
     def listar_contas(self):
         if not self.contas:
-            print("Não há contas cadastradas. ")
+            print("\nNão há contas cadastradas. ")
         else:
             print("\nLista de Contas Cadastradas: ")
             for conta in self.contas.values():
@@ -107,32 +107,32 @@ def menu_inicial():
 
 def cadastrar_cliente(banco):
     nome = input("Digite o nome do Cliente: ")
-    idade = int(input("Digite a idade do cliente: "))
-    cpf = int(input("Digite o cpf do cliente: "))
+    try:
+        idade = int(input("Digite a idade do cliente: "))
+        cpf = int(input("Digite o cpf do cliente: "))
+    except ValueError:
+        print("\nNão foi digitado um valor válido, tente novamente. ")
+        return
 
     cliente = Pessoa(nome, idade, cpf)
-    while True:
-        try:
-            num_conta = input("Digite o número da conta (4 dígitos): ")
-            if len(num_conta) > 4:
-                print("O número da conta possui mais de 4 dígitos. ")
-            else:
-                break
-        except ValueError:
-            print("Não foi digitado um valor válido, tente novamente. ")
+    try:
+        num_conta = int(input("Digite o número da conta: "))
+    except ValueError:
+        print("\nNão foi digitado um valor válido, tente novamente. ")
+        return
     valida_cadastro(cliente, num_conta, banco)
 
 
 def valida_cadastro(cliente, num_conta, banco):
     if num_conta in banco.contas.keys():
-        print(f"Já existe uma conta {num_conta} cadastrada no sistema. ")
+        print(f"\nJá existe uma conta {num_conta} cadastrada no sistema. ")
     else:
         conta = Conta(cliente, num_conta)
         banco.adicionar_conta(conta)
 
 
 def menu_cliente():
-    print("-" * 40)
+    print("\n"+"-" * 40)
     print("[1] - Sacar um valor ")
     print("[2] - Depositar um valor ")
     print("[3] - Tranferir um valor ")
@@ -152,42 +152,46 @@ def sistema_bancario():
             cadastrar_cliente(banco)
         elif opcao == "2":
             if not banco.contas.keys():
-                print("Não há nenhuma conta cadastrada. ")
+                print("\nNão há nenhuma conta cadastrada. ")
                 continue
             while True:
-                num_conta = input("Digite o número da conta: ")
-                if num_conta not in banco.contas.keys():
-                    print("Esta conta não existe em nosso sistema, tente novamente. ")
-                else:
-                    conta_logada = banco.encontrar_conta(num_conta)
-                    break
+                try:
+                    num_conta = int(input("Digite o número da conta: "))
+                    if num_conta not in banco.contas.keys():
+                        print("\nEsta conta não existe em nosso sistema, tente novamente. ")
+                    else:
+                        conta_logada = banco.encontrar_conta(num_conta)
+                        break
+                except ValueError:
+                    print("\nNão foi digitado um número válido, tente novamente. ")
             while True:
                 menu_cliente()
                 opcao_cliente = input("Selecione uma das opções: ")
+                os.system('cls')
                 if opcao_cliente == "1":
                     try:
                         valor = float(input("Qual valor deseja sacar de sua conta? "))
                         conta_logada.sacar(valor)
                     except ValueError:
-                        print("Não foi digitado um número válido, tente novamente. ")
+                        print("\nNão foi digitado um número válido, tente novamente. ")
                 elif opcao_cliente == "2":
                     try:
                         valor = float(input("Qual valor deseja depositar em sua conta? "))
                         conta_logada.depositar(valor)
                     except ValueError:
-                        print("Não foi digitado um número válido, tente novamente. ")
+                        print("\nNão foi digitado um número válido, tente novamente. ")
                 elif opcao_cliente == "3":
                     try:
                         valor = float(input("Qual valor deseja transferir de sua conta? "))
                         banco.listar_contas()
-                        num_conta_destino = input("\nPara qual conta deseja fazer a transferência? ")
+                        num_conta_destino = int(input("\nPara qual conta deseja fazer a transferência? "))
                         conta_destino = banco.encontrar_conta(num_conta_destino)
                         if conta_destino:
                             conta_logada.transferir(valor, conta_destino)
                         else:
-                            print(f"A conta não foi encontrada. ")
+                            print(f"\nA conta não foi encontrada. ")
                     except ValueError:
-                        print("Não foi digitado um número válido, tente novamente. ")
+                        print("\nNão foi digitado um número válido, tente novamente. ")
                 elif opcao_cliente == "4":
                     conta_logada.consultar_saldo()
                 elif opcao_cliente == "5":
@@ -195,14 +199,14 @@ def sistema_bancario():
                 elif opcao_cliente == "6":
                     break
                 else:
-                    print("Opção inválida, tente novamente.")
+                    print("\nOpção inválida, tente novamente.")
         elif opcao == "3":
             banco.listar_contas()
         elif opcao == "4":
-            print("Saindo do banco...")
+            print("\nSaindo do banco...")
             break
         else:
-            print("Opção inválida, tente novamente.")
+            print("\nOpção inválida, tente novamente.")
 
 
 if __name__ == "__main__":
