@@ -1,7 +1,7 @@
 import openpyxl
 from collections import Counter
 from openpyxl.chart import BarChart, Reference
-
+import matplotlib.pyplot as plt
 
 
 def identifica_indices_colunas(sheet):
@@ -22,6 +22,7 @@ def define_filtro(possiveis_referencias):
         else:
             print(f"\nAnalisando {filtro}...")
             return filtro
+
 
 def valida_referencias(sheet, col_index_ref):
     possiveis_referencias = set()
@@ -59,7 +60,6 @@ def analisa_valores_mensais(filtro, sheet, col_index_ref, col_index_valor):
         print(f"No período de {ref} foi obtido {valor}kk em loots raros. ")
 
 
-
 def analisa_origem_valores(filtro, sheet, col_index_ref, col_index_onde, col_index_valor):
     origem_valores = {}
 
@@ -77,6 +77,16 @@ def analisa_origem_valores(filtro, sheet, col_index_ref, col_index_onde, col_ind
     for origem, valor in origem_valores.items():
         print(f" - {valor}kks em loots raros vindos de {origem}. ")
 
+    origem_plot = list(origem_valores.keys())
+    valor_plot = list(origem_valores.values())
+    cmap = plt.colormaps['Set3']
+    cores = [cmap(cor) for cor in range(len(origem_plot))]
+    plt.pie(valor_plot, labels=origem_plot, autopct='%1.1f%%', startangle=140,
+            colors=cores, shadow=True)
+    plt.axis('equal')
+    plt.title(f'Origem dos valores no período {filtro}')
+    plt.show()
+
 
 def analisa_quantidade_items(filtro, sheet, col_index_ref, col_index_item):
     quantidade_items = {}
@@ -92,6 +102,16 @@ def analisa_quantidade_items(filtro, sheet, col_index_ref, col_index_item):
     for item, contagem in contador.items():
         quantidade_items[item] = contagem
         print(f" - {contagem}x {item}.")
+
+    item_plot = list(quantidade_items.keys())
+    quantidade_plot = list(quantidade_items.values())
+    cmap = plt.colormaps['Set3']
+    cores = [cmap(cor) for cor in range(len(item_plot))]
+    plt.pie(quantidade_plot, labels=item_plot, autopct='%1.1f%%', startangle=140,
+            colors=cores, shadow=True)
+    plt.axis('equal')
+    plt.title(f'Quantidade de cada item no período {filtro}')
+    plt.show()
 
 
 def criar_novo_arquivo(valor_mensal):
@@ -165,7 +185,7 @@ def automacao_leitura_rares():
                 print("Criando arquivo...")
                 criar_novo_arquivo(valor_mensal)
             elif opcao_novo_arquivo == "N":
-                return
+                pass
             else:
                 print("Não foi digitada uma opção válida.")
         elif opcao == "2":
@@ -190,7 +210,6 @@ def automacao_leitura_rares():
             print("Opção inválida, tente novamente. ")
 
     workbook.close()
-    pass
 
 
 if __name__ == "__main__":
